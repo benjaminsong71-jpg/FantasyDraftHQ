@@ -1433,6 +1433,13 @@ function App() {
             <Bot size={16} />
             AI Assistant
           </button>
+          <button
+  className={page === "live" ? "active" : ""}
+  onClick={() => navigate("live")}
+>
+  <Users size={16} />
+  Live Draft
+</button>
         </nav>
 
         <button
