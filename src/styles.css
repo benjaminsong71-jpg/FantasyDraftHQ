@@ -1297,3 +1297,410 @@ a:hover {
   background: #173b62 !important;
   border-color: #4d9cff !important;
 }
+/* =========================================
+   LIVE DRAFT - POLISHED DRAFT ROOM
+   ========================================= */
+
+.live-draft-page {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 32px 28px 60px;
+}
+
+/* Header */
+.live-draft-header {
+  padding: 20px 0 28px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 22px;
+}
+
+.live-draft-header .eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #70a7ff;
+  text-transform: uppercase;
+}
+
+.live-draft-header h1 {
+  margin: 8px 0 6px;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.live-draft-header p {
+  margin: 0;
+  color: #9eb0ca;
+  font-size: 16px;
+}
+
+/* Main two-column draft room */
+.live-draft-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* Left side */
+.live-draft-main {
+  min-width: 0;
+}
+
+.live-draft-card {
+  background: #101f39;
+  border: 1px solid #243c60;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+/* Current pick banner */
+.live-draft-pick {
+  padding: 20px 22px;
+  background: linear-gradient(135deg, #13294a, #10213c);
+  border-bottom: 1px solid #294365;
+}
+
+.live-draft-pick-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.live-draft-pick-label {
+  color: #70a7ff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.live-draft-pick-number {
+  color: #aebed5;
+  font-size: 14px;
+}
+
+.live-draft-pick h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.live-draft-pick p {
+  margin: 6px 0 0;
+  color: #9eb0ca;
+}
+
+/* Search/filter toolbar */
+.live-draft-toolbar {
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #243c60;
+  background: #0d1b31;
+}
+
+.live-draft-search {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+}
+
+.live-draft-search input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+  padding: 0 14px 0 40px;
+  border-radius: 9px;
+  border: 1px solid #294365;
+  background: #142743;
+  color: #ffffff;
+  outline: none;
+}
+
+.live-draft-search input:focus {
+  border-color: #5b91e8;
+  box-shadow: 0 0 0 3px rgba(91,145,232,.12);
+}
+
+.live-draft-search svg {
+  position: absolute;
+  left: 13px;
+  top: 12px;
+  color: #7890ae;
+}
+
+.live-draft-filter {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid #294365;
+  background: #142743;
+  color: #dbe7f7;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.live-draft-filter:hover {
+  background: #1b3455;
+}
+
+.live-draft-filter.active {
+  background: #28558e;
+  border-color: #4f86cf;
+  color: #ffffff;
+}
+
+/* Player rows */
+.live-draft-players {
+  background: #0e1c31;
+}
+
+.live-draft-player {
+  min-height: 68px;
+  padding: 10px 14px 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #213753;
+  transition: background .15s ease;
+}
+
+.live-draft-player:hover {
+  background: #142743;
+}
+
+.live-draft-player:last-child {
+  border-bottom: none;
+}
+
+.live-draft-player-info {
+  min-width: 0;
+}
+
+.live-draft-player-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.live-draft-player-meta {
+  color: #91a5c1;
+  font-size: 13px;
+}
+
+.live-draft-player-rank {
+  color: #70a7ff;
+  font-weight: 800;
+  margin-right: 8px;
+}
+
+.live-draft-record {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #345477;
+  background: #172d4b;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.live-draft-record:hover {
+  background: #245184;
+  border-color: #4d83bd;
+}
+
+/* Right DraftIQ panel */
+.live-draft-sidebar {
+  background: #101f39;
+  border: 1px solid #294365;
+  border-radius: 12px;
+  overflow: hidden;
+  position: sticky;
+  top: 90px;
+}
+
+.live-draft-sidebar-header {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: linear-gradient(135deg, #172f52, #122541);
+  border-bottom: 1px solid #294365;
+}
+
+.live-draft-sidebar-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #ffffff;
+}
+
+.live-draft-sidebar-header p {
+  margin: 3px 0 0;
+  color: #8fa5c1;
+  font-size: 12px;
+}
+
+.live-draft-sidebar-body {
+  padding: 16px;
+}
+
+.live-draft-recommendation {
+  padding: 13px;
+  border: 1px solid #294365;
+  border-radius: 9px;
+  background: #142743;
+  margin-bottom: 9px;
+}
+
+.live-draft-recommendation strong {
+  display: block;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.live-draft-recommendation span {
+  display: block;
+  color: #8fa5c1;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.live-draft-recommendation button {
+  margin-top: 9px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 7px;
+  border: 1px solid #3b6593;
+  background: #1a3659;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.live-draft-recommendation button:hover {
+  background: #28558e;
+}
+
+/* Current needs */
+.live-draft-needs {
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 9px;
+  background: #0c192d;
+  border: 1px solid #233b5b;
+}
+
+.live-draft-needs h4,
+.live-draft-roster h4 {
+  margin: 0 0 10px;
+  color: #70a7ff;
+  font-size: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+.live-draft-needs p {
+  margin: 0;
+  color: #dce7f5;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Roster */
+.live-draft-roster {
+  margin-top: 18px;
+}
+
+.live-draft-roster-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #243b59;
+  gap: 12px;
+}
+
+.live-draft-roster-row:last-child {
+  border-bottom: none;
+}
+
+.live-draft-roster-slot {
+  color: #7f96b4;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.live-draft-roster-player {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Undo/reset buttons */
+.live-draft-controls {
+  display: flex;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.live-draft-controls button {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #304c70;
+  background: #172d4b;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.live-draft-controls button:hover {
+  background: #234a78;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .live-draft-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .live-draft-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .live-draft-page {
+    padding: 20px 14px 40px;
+  }
+
+  .live-draft-header h1 {
+    font-size: 42px;
+  }
+
+  .live-draft-player {
+    padding: 10px;
+  }
+
+  .live-draft-player-meta {
+    font-size: 12px;
+  }
+
+  .live-draft-record {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
