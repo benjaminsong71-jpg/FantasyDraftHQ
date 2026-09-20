@@ -1704,3 +1704,246 @@ a:hover {
     font-size: 12px;
   }
 }
+/* =========================================
+   FANTASY DRAFT HQ — GLOBAL VISUAL THEME
+   Match the Player Rankings design
+   ========================================= */
+
+:root {
+  --fdhq-bg: #0b1629;
+  --fdhq-bg-secondary: #101f39;
+  --fdhq-card: #122440;
+  --fdhq-card-hover: #172d4b;
+  --fdhq-border: #294365;
+  --fdhq-border-soft: #213753;
+  --fdhq-text: #f5f7fb;
+  --fdhq-text-secondary: #9eb0ca;
+  --fdhq-blue: #70a7ff;
+  --fdhq-blue-dark: #28558e;
+  --fdhq-red: #d93632;
+}
+
+/* ---------- GLOBAL FONT ---------- */
+
+html,
+body,
+#root {
+  font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(52, 87, 145, 0.16),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #0b1629 0%,
+      #101c31 48%,
+      #151527 100%
+    );
+
+  color: var(--fdhq-text);
+}
+
+/* Make every major element use the same font */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* ---------- HEADINGS ---------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  color: var(--fdhq-text);
+  letter-spacing: -0.5px;
+}
+
+h1 {
+  font-weight: 800;
+}
+
+h2,
+h3 {
+  font-weight: 750;
+}
+
+p {
+  color: var(--fdhq-text-secondary);
+}
+
+/* ---------- COMMON CARDS ---------- */
+
+.card,
+.panel,
+.section,
+.stat-card,
+.info-box {
+  background: rgba(16, 31, 57, 0.94);
+  border: 1px solid var(--fdhq-border);
+  border-radius: 10px;
+}
+
+/* ---------- INPUTS ---------- */
+
+input,
+select,
+textarea {
+  background: #0d1b31;
+  color: var(--fdhq-text);
+  border: 1px solid var(--fdhq-border);
+  border-radius: 9px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #7186a2;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--fdhq-blue);
+  box-shadow: 0 0 0 3px rgba(112, 167, 255, 0.1);
+}
+
+/* ---------- STANDARD BUTTONS ---------- */
+
+button {
+  font-weight: 700;
+}
+
+.primary-btn {
+  background: var(--fdhq-blue-dark);
+  border: 1px solid #4b7fbd;
+  color: white;
+  border-radius: 8px;
+}
+
+.primary-btn:hover {
+  background: #32669f;
+}
+
+.secondary-btn {
+  background: #172d4b;
+  border: 1px solid var(--fdhq-border);
+  color: white;
+  border-radius: 8px;
+}
+
+.secondary-btn:hover {
+  background: #213f64;
+}
+
+/* ---------- SEARCH / FILTER AREAS ---------- */
+
+.search-row,
+.filters,
+.filter-row {
+  gap: 10px;
+}
+
+.filter-btn {
+  background: #122440;
+  border: 1px solid var(--fdhq-border);
+  color: #c8d5e7;
+  border-radius: 8px;
+}
+
+.filter-btn:hover {
+  background: #1a3455;
+  color: white;
+}
+
+.filter-btn.active {
+  background: var(--fdhq-blue-dark);
+  border-color: #4f86cf;
+  color: white;
+}
+
+/* ---------- TABLES / PLAYER LISTS ---------- */
+
+table {
+  background: #101f39;
+  border-color: var(--fdhq-border);
+}
+
+th {
+  background: #183252;
+  color: #9eb5d3;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+td {
+  color: #e7edf6;
+  border-color: var(--fdhq-border-soft);
+}
+
+tr:hover td {
+  background: rgba(35, 63, 98, 0.35);
+}
+
+/* ---------- NAVIGATION ---------- */
+
+nav button {
+  font-family: inherit;
+  font-weight: 700;
+}
+
+/* ---------- SMALL LABELS ---------- */
+
+.eyebrow,
+.label,
+.kicker {
+  color: var(--fdhq-blue);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ---------- INFO BOXES ---------- */
+
+.info-box {
+  color: #d8e4f4;
+  background: rgba(18, 36, 64, 0.9);
+  border-left: 3px solid var(--fdhq-blue);
+}
+
+/* ---------- SCROLLBARS ---------- */
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a1424;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #294365;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3c5f88;
+}
