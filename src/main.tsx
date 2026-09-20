@@ -1483,6 +1483,7 @@ function App() {
       )}
 
       {page === "mock" && (
+
         <DraftPage
           roster={roster}
           setRoster={setRoster}
@@ -1491,7 +1492,12 @@ function App() {
           scoring={scoring}
         />
       )}
-
+{page === "live" && (
+  <LiveDraftPage
+    players={players}
+    onBack={() => navigate("home")}
+  />
+)}
       <footer>
         <span>
           Fantasy Draft HQ
