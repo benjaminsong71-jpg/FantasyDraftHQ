@@ -10,7 +10,7 @@ export type FantasyPlayer = {
 };
 
 const PLAYER_DATA_URL =
-  "https://github.com/dynastyprocess/data/raw/master/files/db_fpecr_latest.csv";
+  "https://raw.githubusercontent.com/dynastyprocess/data/master/files/db_fpecr_latest.csv";
 
 function getTier(rank: number): number {
   if (rank <= 12) return 1;
@@ -81,7 +81,7 @@ function parseCSV(text: string): string[][] {
 
       if (
         currentRow.some(
-          value => value.trim() !== ""
+          (value) => value.trim() !== ""
         )
       ) {
         rows.push(currentRow);
@@ -102,7 +102,7 @@ function parseCSV(text: string): string[][] {
 
     if (
       currentRow.some(
-        value => value.trim() !== ""
+        (value) => value.trim() !== ""
       )
     ) {
       rows.push(currentRow);
@@ -115,9 +115,7 @@ function parseCSV(text: string): string[][] {
 export async function fetchFantasyPlayers(): Promise<
   FantasyPlayer[]
 > {
-  const response = await fetch(
-    PLAYER_DATA_URL
-  );
+  const response = await fetch(PLAYER_DATA_URL);
 
   if (!response.ok) {
     throw new Error(
@@ -126,7 +124,6 @@ export async function fetchFantasyPlayers(): Promise<
   }
 
   const csvText = await response.text();
-
   const rows = parseCSV(csvText);
 
   if (rows.length < 2) {
@@ -135,7 +132,7 @@ export async function fetchFantasyPlayers(): Promise<
     );
   }
 
-  const headers = rows[0].map(header =>
+  const headers = rows[0].map((header) =>
     header.trim().toLowerCase()
   );
 
@@ -156,27 +153,27 @@ export async function fetchFantasyPlayers(): Promise<
   const playerIndex = findColumn([
     "player",
     "player_name",
-    "name"
+    "name",
   ]);
 
   const positionIndex = findColumn([
     "pos",
-    "position"
+    "position",
   ]);
 
   const teamIndex = findColumn([
     "team",
-    "tm"
+    "tm",
   ]);
 
   const rankIndex = findColumn([
     "ecr",
     "ecr_avg",
-    "rank"
+    "rank",
   ]);
 
   const byeIndex = findColumn([
-    "bye"
+    "bye",
   ]);
 
   if (
@@ -249,16 +246,16 @@ export async function fetchFantasyPlayers(): Promise<
       bye:
         byeIndex >= 0
           ? Number(row[byeIndex]) || undefined
-          : undefined
+          : undefined,
     });
   }
 
   const uniquePlayers =
     Array.from(
       new Map(
-        players.map(player => [
+        players.map((player) => [
           player.id,
-          player
+          player,
         ])
       ).values()
     );
