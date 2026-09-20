@@ -1,18 +1,18 @@
 export type FantasyPlayer = {
   id: string;
   name: string;
-  position: string;
+  position: "QB" | "RB" | "WR" | "TE" | "K";
   team: string;
   rank: number;
   tier: number;
-  bye: number | null;
-  image?: string;
+  bye?: number;
+  projectedPoints?: number;
 };
 
-const RANKINGS_URL =
+const PLAYER_DATA_URL =
   "https://github.com/dynastyprocess/data/raw/master/files/db_fpecr_latest.csv";
 
-function getTier(rank: number) {
+function getTier(rank: number): number {
   if (rank <= 12) return 1;
   if (rank <= 36) return 2;
   if (rank <= 72) return 3;
@@ -20,76 +20,104 @@ function getTier(rank: number) {
   return 5;
 }
 
-function normalizePosition(position: string) {
-  const pos = position.toUpperCase();
+function normalizePosition(
+  position: string
+): FantasyPlayer["position"] | null {
+  const value = position.trim().toUpperCase();
 
-  if (pos.includes("QB")) return "QB";
-  if (pos.includes("RB")) return "RB";
-  if (pos.includes("WR")) return "WR";
-  if (pos.includes("TE")) return "TE";
-  if (pos === "K") return "K";
+  if (value === "QB") return "QB";
+  if (value === "RB") return "RB";
+  if (value === "WR") return "WR";
+  if (value === "TE") return "TE";
+  if (value === "K") return "K";
 
-  return pos;
+  return null;
 }
 
-function parseCSV(text: string) {
+function parseCSV(text: string): string[][] {
   const rows: string[][] = [];
-
-  let row: string[] = [];
-  let value = "";
+  let currentRow: string[] = [];
+  let currentValue = "";
   let insideQuotes = false;
 
   for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const next = text[i + 1];
+    const character = text[i];
+    const nextCharacter = text[i + 1];
 
-    if (char === '"' && insideQuotes && next === '"') {
-      value += '"';
+    if (
+      character === '"' &&
+      insideQuotes &&
+      nextCharacter === '"'
+    ) {
+      currentValue += '"';
       i++;
       continue;
     }
 
-    if (char === '"') {
+    if (character === '"') {
       insideQuotes = !insideQuotes;
       continue;
     }
 
-    if (char === "," && !insideQuotes) {
-      row.push(value);
-      value = "";
+    if (character === "," && !insideQuotes) {
+      currentRow.push(currentValue);
+      currentValue = "";
       continue;
     }
 
-    if ((char === "\n" || char === "\r") && !insideQuotes) {
-      if (char === "\r" && next === "\n") i++;
-
-      row.push(value);
-      value = "";
-
-      if (row.some(cell => cell.trim() !== "")) {
-        rows.push(row);
+    if (
+      (character === "\n" || character === "\r") &&
+      !insideQuotes
+    ) {
+      if (
+        character === "\r" &&
+        nextCharacter === "\n"
+      ) {
+        i++;
       }
 
-      row = [];
+      currentRow.push(currentValue);
+      currentValue = "";
+
+      if (
+        currentRow.some(
+          value => value.trim() !== ""
+        )
+      ) {
+        rows.push(currentRow);
+      }
+
+      currentRow = [];
       continue;
     }
 
-    value += char;
+    currentValue += character;
   }
 
-  if (value || row.length) {
-    row.push(value);
+  if (
+    currentValue.length > 0 ||
+    currentRow.length > 0
+  ) {
+    currentRow.push(currentValue);
 
-    if (row.some(cell => cell.trim() !== "")) {
-      rows.push(row);
+    if (
+      currentRow.some(
+        value => value.trim() !== ""
+      )
+    ) {
+      rows.push(currentRow);
     }
   }
 
   return rows;
 }
 
-export async function fetchFantasyPlayers(): Promise<FantasyPlayer[]> {
-  const response = await fetch(RANKINGS_URL);
+export async function fetchFantasyPlayers(): Promise<
+  FantasyPlayer[]
+> {
+  const response = await fetch(
+    PLAYER_DATA_URL
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -97,51 +125,57 @@ export async function fetchFantasyPlayers(): Promise<FantasyPlayer[]> {
     );
   }
 
-  const csv = await response.text();
+  const csvText = await response.text();
 
-  const rows = parseCSV(csv);
+  const rows = parseCSV(csvText);
 
   if (rows.length < 2) {
-    throw new Error("The player dataset was empty.");
+    throw new Error(
+      "The player database returned no players."
+    );
   }
 
-  const headers = rows[0].map(h =>
-    h.trim().toLowerCase()
+  const headers = rows[0].map(header =>
+    header.trim().toLowerCase()
   );
 
-  const index = (names: string[]) => {
-    for (const name of names) {
-      const found = headers.indexOf(name);
+  function findColumn(
+    possibleNames: string[]
+  ): number {
+    for (const name of possibleNames) {
+      const index = headers.indexOf(name);
 
-      if (found !== -1) return found;
+      if (index !== -1) {
+        return index;
+      }
     }
 
     return -1;
-  };
+  }
 
-  const playerIndex = index([
+  const playerIndex = findColumn([
     "player",
     "player_name",
     "name"
   ]);
 
-  const positionIndex = index([
+  const positionIndex = findColumn([
     "pos",
     "position"
   ]);
 
-  const teamIndex = index([
+  const teamIndex = findColumn([
     "team",
     "tm"
   ]);
 
-  const rankIndex = index([
+  const rankIndex = findColumn([
     "ecr",
     "ecr_avg",
     "rank"
   ]);
 
-  const byeIndex = index([
+  const byeIndex = findColumn([
     "bye"
   ]);
 
@@ -152,37 +186,49 @@ export async function fetchFantasyPlayers(): Promise<FantasyPlayer[]> {
     rankIndex === -1
   ) {
     throw new Error(
-      "The fantasy ranking file changed its column names."
+      "The player data format has changed."
     );
   }
 
   const players: FantasyPlayer[] = [];
 
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+  for (
+    let rowIndex = 1;
+    rowIndex < rows.length;
+    rowIndex++
+  ) {
+    const row = rows[rowIndex];
 
-    const name = row[playerIndex]?.trim();
-    const position = normalizePosition(
-      row[positionIndex]?.trim() || ""
-    );
-    const team = row[teamIndex]?.trim() || "";
+    const name =
+      row[playerIndex]?.trim();
 
-    const rawRank = Number(
-      row[rankIndex]?.trim()
-    );
+    const position =
+      normalizePosition(
+        row[positionIndex] || ""
+      );
 
-    if (!name || !position || !Number.isFinite(rawRank)) {
+    const team =
+      row[teamIndex]?.trim() || "";
+
+    const rank =
+      Number(
+        row[rankIndex]?.trim()
+      );
+
+    if (
+      !name ||
+      !position ||
+      !Number.isFinite(rank)
+    ) {
       continue;
     }
 
-    // Only use fantasy-relevant offensive positions.
-    if (!["QB", "RB", "WR", "TE", "K"].includes(position)) {
+    const roundedRank =
+      Math.round(rank);
+
+    if (roundedRank <= 0) {
       continue;
     }
-
-    const rank = Math.round(rawRank);
-
-    if (rank <= 0) continue;
 
     players.push({
       id:
@@ -196,31 +242,30 @@ export async function fetchFantasyPlayers(): Promise<FantasyPlayer[]> {
 
       team,
 
-      rank,
+      rank: roundedRank,
 
-      tier: getTier(rank),
+      tier: getTier(roundedRank),
 
       bye:
-        byeIndex === -1
-          ? null
-          : Number(row[byeIndex]) || null
+        byeIndex >= 0
+          ? Number(row[byeIndex]) || undefined
+          : undefined
     });
   }
 
-  // Remove duplicate players.
-  const unique = Array.from(
-    new Map(
-      players.map(player => [
-        player.id,
-        player
-      ])
-    ).values()
-  );
+  const uniquePlayers =
+    Array.from(
+      new Map(
+        players.map(player => [
+          player.id,
+          player
+        ])
+      ).values()
+    );
 
-  // Sort by overall fantasy rank.
-  unique.sort(
+  uniquePlayers.sort(
     (a, b) => a.rank - b.rank
   );
 
-  return unique;
+  return uniquePlayers;
 }
