@@ -1123,3 +1123,177 @@ footer {
     flex-direction: column;
   }
 }
+/* =========================================
+   FIX DEFAULT WHITE BUTTONS / CONTROLS
+   ========================================= */
+
+button,
+select,
+input {
+  font-family: inherit;
+}
+
+/* Navigation buttons */
+nav button,
+.nav-button {
+  background: transparent;
+  color: #d7e3f0;
+  border: 1px solid transparent;
+}
+
+nav button:hover,
+.nav-button:hover {
+  background: #102b4a;
+  color: #ffffff;
+  border-color: #234667;
+}
+
+/* Main buttons */
+button {
+  cursor: pointer;
+  color: #ffffff;
+  background: #102b4a;
+  border: 1px solid #234667;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #173b62;
+  border-color: #4d9cff;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Red primary buttons */
+.primary-button,
+.start-draft-button {
+  background: #d71920 !important;
+  color: #ffffff !important;
+  border: 1px solid #d71920 !important;
+}
+
+.primary-button:hover,
+.start-draft-button:hover {
+  background: #ef2b32 !important;
+}
+
+/* AI Assistant buttons */
+.ai-button,
+.draftiq-button {
+  background: #102b4a !important;
+  color: #ffffff !important;
+  border: 1px solid #234667 !important;
+}
+
+.ai-button:hover,
+.draftiq-button:hover {
+  background: #173b62 !important;
+  border-color: #4d9cff !important;
+}
+
+/* Search boxes and dropdowns */
+input,
+select {
+  background: #0b1f38;
+  color: #f7fafc;
+  border: 1px solid #234667;
+  border-radius: 8px;
+}
+
+input::placeholder {
+  color: #71859a;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #4d9cff;
+  box-shadow: 0 0 0 2px rgba(77, 156, 255, 0.15);
+}
+
+/* Dropdown options */
+select option {
+  background: #0b1f38;
+  color: #ffffff;
+}
+
+/* Mock Draft / AI cards */
+.card,
+.panel,
+.ai-card,
+.draft-card,
+.mock-draft-card {
+  background: #102b4a;
+  color: #f7fafc;
+  border: 1px solid #234667;
+}
+
+/* Make sure headings aren't getting browser-default colors */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #f7fafc;
+}
+
+/* Normal text */
+p,
+span,
+label {
+  color: inherit;
+}
+
+/* Links */
+a {
+  color: #8bbcff;
+}
+
+a:hover {
+  color: #ffffff;
+}
+
+/* Player rows */
+.player-row,
+.tr,
+.player-card {
+  background: #0b1f38;
+  color: #f7fafc;
+  border-bottom: 1px solid #234667;
+}
+
+.player-row:hover,
+.tr:hover,
+.player-card:hover {
+  background: #102b4a;
+}
+
+/* Draft buttons */
+.draft-player-button {
+  background: #d71920 !important;
+  color: #ffffff !important;
+  border: 1px solid #d71920 !important;
+}
+
+.draft-player-button:hover {
+  background: #ef2b32 !important;
+}
+
+/* Pagination */
+.pagination button {
+  background: #102b4a !important;
+  color: #ffffff !important;
+  border: 1px solid #234667 !important;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #173b62 !important;
+  border-color: #4d9cff !important;
+}
