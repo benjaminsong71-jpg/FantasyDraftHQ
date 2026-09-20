@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowRight,
@@ -6,8 +6,6 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  CircleHelp,
-  Filter,
   Home,
   Menu,
   Search,
@@ -20,17 +18,14 @@ import {
 } from "lucide-react";
 import "./styles.css";
 
-type Position = "QB" | "RB" | "WR" | "TE";
+import {
+  fetchFantasyPlayers,
+  type FantasyPlayer,
+} from "./playerService";
 
-type Player = {
-  id: number;
-  rank: number;
-  name: string;
-  position: Position;
-  team: string;
-  bye: number;
-  tier: number;
-};
+type Position = "QB" | "RB" | "WR" | "TE" | "K";
+
+type Player = FantasyPlayer;
 
 type Roster = {
   QB: Player | null;
@@ -40,61 +35,13 @@ type Roster = {
   WR2: Player | null;
   TE: Player | null;
   FLEX: Player | null;
+  K: Player | null;
 };
 
 type Message = {
   role: "user" | "assistant";
   text: string;
 };
-
-/*
-  2026 PPR player pool.
-  The first 24 overall ranks are based on the current FantasyPros
-  2026 PPR consensus page checked September 2026.
-*/
-const players: Player[] = [
-  { id: 1, rank: 1, name: "Ja'Marr Chase", position: "WR", team: "Bengals", bye: 6, tier: 1 },
-  { id: 2, rank: 2, name: "Jahmyr Gibbs", position: "RB", team: "Lions", bye: 6, tier: 1 },
-  { id: 3, rank: 3, name: "Puka Nacua", position: "WR", team: "Rams", bye: 11, tier: 1 },
-  { id: 4, rank: 4, name: "Bijan Robinson", position: "RB", team: "Falcons", bye: 11, tier: 1 },
-  { id: 5, rank: 5, name: "Amon-Ra St. Brown", position: "WR", team: "Lions", bye: 6, tier: 1 },
-  { id: 6, rank: 6, name: "Jaxon Smith-Njigba", position: "WR", team: "Seahawks", bye: 11, tier: 1 },
-  { id: 7, rank: 7, name: "Christian McCaffrey", position: "RB", team: "49ers", bye: 8, tier: 1 },
-  { id: 8, rank: 8, name: "Justin Jefferson", position: "WR", team: "Vikings", bye: 6, tier: 1 },
-  { id: 9, rank: 9, name: "CeeDee Lamb", position: "WR", team: "Cowboys", bye: 14, tier: 1 },
-  { id: 10, rank: 10, name: "Jonathan Taylor", position: "RB", team: "Colts", bye: 13, tier: 1 },
-  { id: 11, rank: 11, name: "A.J. Brown", position: "WR", team: "Patriots", bye: 11, tier: 2 },
-  { id: 12, rank: 12, name: "Drake London", position: "WR", team: "Falcons", bye: 11, tier: 2 },
-  { id: 13, rank: 13, name: "Nico Collins", position: "WR", team: "Texans", bye: 8, tier: 2 },
-  { id: 14, rank: 14, name: "Chase Brown", position: "RB", team: "Bengals", bye: 6, tier: 2 },
-  { id: 15, rank: 15, name: "James Cook", position: "RB", team: "Bills", bye: 7, tier: 2 },
-  { id: 16, rank: 16, name: "Chris Olave", position: "WR", team: "Saints", bye: 7, tier: 2 },
-  { id: 17, rank: 17, name: "Trey McBride", position: "TE", team: "Cardinals", bye: 8, tier: 2 },
-  { id: 18, rank: 18, name: "George Pickens", position: "WR", team: "Cowboys", bye: 14, tier: 2 },
-  { id: 19, rank: 19, name: "De'Von Achane", position: "RB", team: "Dolphins", bye: 6, tier: 2 },
-  { id: 20, rank: 20, name: "Saquon Barkley", position: "RB", team: "Eagles", bye: 9, tier: 2 },
-  { id: 21, rank: 21, name: "DeVonta Smith", position: "WR", team: "Eagles", bye: 9, tier: 2 },
-  { id: 22, rank: 22, name: "Malik Nabers", position: "WR", team: "Giants", bye: 8, tier: 2 },
-  { id: 23, rank: 23, name: "Kenneth Walker III", position: "RB", team: "Chiefs", bye: 5, tier: 2 },
-  { id: 24, rank: 24, name: "Josh Allen", position: "QB", team: "Bills", bye: 7, tier: 2 },
-
-  { id: 25, rank: 25, name: "Lamar Jackson", position: "QB", team: "Ravens", bye: 7, tier: 2 },
-  { id: 26, rank: 26, name: "Drake Maye", position: "QB", team: "Patriots", bye: 11, tier: 2 },
-  { id: 27, rank: 27, name: "Joe Burrow", position: "QB", team: "Bengals", bye: 6, tier: 2 },
-  { id: 28, rank: 28, name: "Jalen Hurts", position: "QB", team: "Eagles", bye: 9, tier: 2 },
-  { id: 29, rank: 29, name: "Jayden Daniels", position: "QB", team: "Commanders", bye: 12, tier: 2 },
-  { id: 30, rank: 30, name: "Brock Bowers", position: "TE", team: "Raiders", bye: 13, tier: 2 },
-  { id: 31, rank: 31, name: "Colston Loveland", position: "TE", team: "Bears", bye: 5, tier: 3 },
-  { id: 32, rank: 32, name: "Tyler Warren", position: "TE", team: "Colts", bye: 13, tier: 3 },
-  { id: 33, rank: 33, name: "Sam LaPorta", position: "TE", team: "Lions", bye: 6, tier: 3 },
-  { id: 34, rank: 34, name: "George Kittle", position: "TE", team: "49ers", bye: 8, tier: 3 },
-  { id: 35, rank: 35, name: "Travis Kelce", position: "TE", team: "Chiefs", bye: 5, tier: 3 },
-  { id: 36, rank: 36, name: "Caleb Williams", position: "QB", team: "Bears", bye: 5, tier: 3 },
-  { id: 37, rank: 37, name: "Justin Herbert", position: "QB", team: "Chargers", bye: 12, tier: 3 },
-  { id: 38, rank: 38, name: "Trevor Lawrence", position: "QB", team: "Jaguars", bye: 8, tier: 3 },
-  { id: 39, rank: 39, name: "Dak Prescott", position: "QB", team: "Cowboys", bye: 14, tier: 3 },
-  { id: 40, rank: 40, name: "Brock Purdy", position: "QB", team: "49ers", bye: 8, tier: 3 },
-];
 
 const emptyRoster: Roster = {
   QB: null,
@@ -104,7 +51,113 @@ const emptyRoster: Roster = {
   WR2: null,
   TE: null,
   FLEX: null,
+  K: null,
 };
+
+/*
+  Small fallback pool.
+
+  This is only used if the external player database cannot be loaded.
+  The normal app will attempt to load players from playerService.ts first.
+*/
+const fallbackPlayers: Player[] = [
+  {
+    id: "ja-marr-chase-bengals-wr",
+    name: "Ja'Marr Chase",
+    position: "WR",
+    team: "Bengals",
+    rank: 1,
+    tier: 1,
+  },
+  {
+    id: "jahmyr-gibbs-lions-rb",
+    name: "Jahmyr Gibbs",
+    position: "RB",
+    team: "Lions",
+    rank: 2,
+    tier: 1,
+  },
+  {
+    id: "puka-nacua-rams-wr",
+    name: "Puka Nacua",
+    position: "WR",
+    team: "Rams",
+    rank: 3,
+    tier: 1,
+  },
+  {
+    id: "bijan-robinson-falcons-rb",
+    name: "Bijan Robinson",
+    position: "RB",
+    team: "Falcons",
+    rank: 4,
+    tier: 1,
+  },
+  {
+    id: "amon-ra-st-brown-lions-wr",
+    name: "Amon-Ra St. Brown",
+    position: "WR",
+    team: "Lions",
+    rank: 5,
+    tier: 1,
+  },
+  {
+    id: "justin-jefferson-vikings-wr",
+    name: "Justin Jefferson",
+    position: "WR",
+    team: "Vikings",
+    rank: 6,
+    tier: 1,
+  },
+  {
+    id: "ceedee-lamb-cowboys-wr",
+    name: "CeeDee Lamb",
+    position: "WR",
+    team: "Cowboys",
+    rank: 7,
+    tier: 1,
+  },
+  {
+    id: "christian-mccaffrey-49ers-rb",
+    name: "Christian McCaffrey",
+    position: "RB",
+    team: "49ers",
+    rank: 8,
+    tier: 1,
+  },
+  {
+    id: "josh-allen-bills-qb",
+    name: "Josh Allen",
+    position: "QB",
+    team: "Bills",
+    rank: 9,
+    tier: 1,
+  },
+  {
+    id: "lamar-jackson-ravens-qb",
+    name: "Lamar Jackson",
+    position: "QB",
+    team: "Ravens",
+    rank: 10,
+    tier: 1,
+  },
+  {
+    id: "trey-mcbride-cardinals-te",
+    name: "Trey McBride",
+    position: "TE",
+    team: "Cardinals",
+    rank: 11,
+    tier: 2,
+  },
+  {
+    id: "drake-london-falcons-wr",
+    name: "Drake London",
+    position: "WR",
+    team: "Falcons",
+    rank: 12,
+    tier: 2,
+  },
+];
 
 function Page({
   title,
@@ -122,24 +175,65 @@ function Page({
         <h1>{title}</h1>
         <p>{subtitle}</p>
       </div>
+
       {children}
     </main>
   );
 }
 
-function getRosterPlayers(roster: Roster) {
+function getRosterPlayers(roster: Roster): Player[] {
   return Object.values(roster).filter(Boolean) as Player[];
 }
 
-function getRosterNeeds(roster: Roster) {
+function getRosterNeeds(roster: Roster): Position[] {
   const needs: Position[] = [];
 
   if (!roster.QB) needs.push("QB");
-  if (!roster.RB1 || !roster.RB2) needs.push("RB");
-  if (!roster.WR1 || !roster.WR2) needs.push("WR");
-  if (!roster.TE) needs.push("TE");
+
+  if (!roster.RB1 || !roster.RB2) {
+    needs.push("RB");
+  }
+
+  if (!roster.WR1 || !roster.WR2) {
+    needs.push("WR");
+  }
+
+  if (!roster.TE) {
+    needs.push("TE");
+  }
+
+  if (!roster.K) {
+    needs.push("K");
+  }
 
   return needs;
+}
+
+function canDraftPlayer(
+  player: Player,
+  roster: Roster
+): boolean {
+  if (player.position === "QB") {
+    return !roster.QB;
+  }
+
+  if (player.position === "RB") {
+    return !roster.RB1 || !roster.RB2 || !roster.FLEX;
+  }
+
+  if (player.position === "WR") {
+    return !roster.WR1 || !roster.WR2 || !roster.FLEX;
+  }
+
+  if (player.position === "TE") {
+    return !roster.TE || !roster.FLEX;
+  }
+
+  if (player.position === "K") {
+    return !roster.K;
+  }
+
+  return false;
 }
 
 function assistantReply(
@@ -147,33 +241,34 @@ function assistantReply(
   roster: Roster,
   available: Player[],
   scoring: string
-) {
+): string {
   const q = question.toLowerCase().trim();
   const rosterPlayers = getRosterPlayers(roster);
   const needs = getRosterNeeds(roster);
 
-  const mentionedPlayer = players.find((p) =>
-    q.includes(p.name.toLowerCase())
+  const mentionedPlayer = available.find((player) =>
+    q.includes(player.name.toLowerCase())
   );
 
   if (mentionedPlayer) {
-    const availablePlayer = available.some((p) => p.id === mentionedPlayer.id);
+    const samePosition = available
+      .filter(
+        (player) =>
+          player.position === mentionedPlayer.position &&
+          player.id !== mentionedPlayer.id
+      )
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, 3);
 
-    if (!availablePlayer) {
-      return `${mentionedPlayer.name} is already off the board in this draft. Tell me another player you are considering and I'll compare the available options.`;
-    }
-
-    const samePosition = available.filter(
-      (p) => p.position === mentionedPlayer.position
-    );
-
-    return `${mentionedPlayer.name} is currently ranked #${mentionedPlayer.rank} overall at ${mentionedPlayer.position}. In ${scoring} scoring, I'd consider them in the context of your roster first. Your current needs are ${
+    return `${mentionedPlayer.name} is currently ranked #${mentionedPlayer.rank} overall at ${mentionedPlayer.position}. You're using ${scoring} scoring. Your open needs are ${
       needs.length ? needs.join(", ") : "mostly filled"
-    }. Other available ${mentionedPlayer.position}s near that range include ${samePosition
-      .filter((p) => p.id !== mentionedPlayer.id)
-      .slice(0, 3)
-      .map((p) => `${p.name} (#${p.rank})`)
-      .join(", ") || "none"}.`;
+    }. Other available ${mentionedPlayer.position}s near that range include ${
+      samePosition.length
+        ? samePosition
+            .map((player) => `${player.name} (#${player.rank})`)
+            .join(", ")
+        : "none"
+    }.`;
   }
 
   if (
@@ -184,69 +279,63 @@ function assistantReply(
     q.includes("what should i draft")
   ) {
     const candidates = [...available]
+      .filter((player) => canDraftPlayer(player, roster))
       .sort((a, b) => a.rank - b.rank)
-      .filter((p) => {
-        if (p.position === "QB" && roster.QB) return false;
-        if (p.position === "TE" && roster.TE) return false;
-
-        if (
-          p.position === "RB" &&
-          roster.RB1 &&
-          roster.RB2 &&
-          roster.FLEX
-        )
-          return false;
-
-        if (
-          p.position === "WR" &&
-          roster.WR1 &&
-          roster.WR2 &&
-          roster.FLEX
-        )
-          return false;
-
-        return true;
-      })
       .slice(0, 5);
 
     if (!candidates.length) {
-      return "Your roster is getting full. I would compare the remaining players by position and bye week before making the next selection.";
+      return "Your starting roster is getting full. I would look at depth, bye weeks, and the remaining player pool.";
     }
 
-    return `Based on your current roster, the top available candidates are: ${candidates
-      .map((p) => `${p.name} (#${p.rank}, ${p.position})`)
-      .join(", ")}. Your biggest roster needs are ${
-      needs.length ? needs.join(", ") : "flexibility/depth"
-    }. I would use those needs alongside overall value rather than blindly following the overall ranking.`;
+    return `Based on your current roster, the highest-ranked available options that fit are ${candidates
+      .map(
+        (player) =>
+          `${player.name} (#${player.rank}, ${player.position})`
+      )
+      .join(", ")}. Your current positional needs are ${
+      needs.length ? needs.join(", ") : "flexibility and depth"
+    }.`;
   }
 
-  if (q.includes("my team") || q.includes("roster") || q.includes("need")) {
-    return `Your current roster has ${rosterPlayers.length} player${
+  if (
+    q.includes("my team") ||
+    q.includes("roster") ||
+    q.includes("what do i need") ||
+    q.includes("need")
+  ) {
+    return `You currently have ${rosterPlayers.length} player${
       rosterPlayers.length === 1 ? "" : "s"
-    }. ${
+    } on your roster. ${
       rosterPlayers.length
-        ? `You have ${rosterPlayers.map((p) => `${p.name} (${p.position})`).join(", ")}.`
-        : "You have not selected anyone yet."
+        ? `Your players are ${rosterPlayers
+            .map(
+              (player) =>
+                `${player.name} (${player.position})`
+            )
+            .join(", ")}.`
+        : "You haven't selected anyone yet."
     } ${
       needs.length
-        ? `The open positional needs are ${needs.join(", ")}.`
+        ? `Your open positional needs are ${needs.join(", ")}.`
         : "Your main starting positions are filled."
     }`;
   }
 
   if (q.includes("compare")) {
-    const availableTop = [...available].sort((a, b) => a.rank - b.rank).slice(0, 4);
+    const top = [...available]
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, 5);
 
-    return `For a comparison, give me two player names. Right now, some of the highest-ranked available players are ${availableTop
-      .map((p) => `${p.name} (#${p.rank})`)
+    return `Give me two player names and I'll compare them. The highest-ranked players currently available include ${top
+      .map((player) => `${player.name} (#${player.rank})`)
       .join(", ")}.`;
   }
 
   if (q.includes("ppr") || q.includes("scoring")) {
-    return `This draft is currently using ${scoring} scoring. Scoring format matters because receptions and other league rules can change the value of players. If you tell me your exact scoring rules, I can make the advice more specific.`;
+    return `This draft is using ${scoring} scoring. Scoring settings can change player value, so DraftIQ considers the format when discussing roster decisions.`;
   }
 
-  return `I'm tracking your ${scoring} draft. I can help with questions like "Who should I pick?", "Do I need another RB?", "Compare Ja'Marr Chase and Puka Nacua", or "What does my roster need?" I currently see ${available.length} players available and ${rosterPlayers.length} players on your roster.`;
+  return `I'm tracking your ${scoring} draft. I can help with "Who should I pick?", "What does my roster need?", "Compare two players", or questions about the available player pool. I currently see ${available.length} players available and ${rosterPlayers.length} players on your roster.`;
 }
 
 function AssistantChat({
@@ -261,9 +350,10 @@ function AssistantChat({
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      text: "Hey! I'm DraftIQ. I can look at your current roster, available players, scoring format, and draft situation and give you specific draft advice.",
+      text: "Hey! I'm DraftIQ. I can look at your current roster, available players, scoring format, and draft situation to help you understand your options.",
     },
   ]);
+
   const [input, setInput] = useState("");
 
   function sendMessage() {
@@ -273,10 +363,18 @@ function AssistantChat({
 
     setMessages((old) => [
       ...old,
-      { role: "user", text: userText },
+      {
+        role: "user",
+        text: userText,
+      },
       {
         role: "assistant",
-        text: assistantReply(userText, roster, available, scoring),
+        text: assistantReply(
+          userText,
+          roster,
+          available,
+          scoring
+        ),
       },
     ]);
 
@@ -289,6 +387,7 @@ function AssistantChat({
         <div className="bot-avatar">
           <Bot size={24} />
         </div>
+
         <div>
           <strong>DraftIQ</strong>
           <small>Context-aware draft assistant</small>
@@ -300,7 +399,9 @@ function AssistantChat({
           <div
             key={index}
             className={`chat-message ${
-              message.role === "user" ? "user-message" : "assistant-message"
+              message.role === "user"
+                ? "user-message"
+                : "assistant-message"
             }`}
           >
             {message.text}
@@ -309,13 +410,27 @@ function AssistantChat({
       </div>
 
       <div className="chat-suggestions">
-        <button onClick={() => setInput("Who should I pick next?")}>
+        <button
+          onClick={() =>
+            setInput("Who should I pick next?")
+          }
+        >
           Who should I pick?
         </button>
-        <button onClick={() => setInput("What does my roster need?")}>
+
+        <button
+          onClick={() =>
+            setInput("What does my roster need?")
+          }
+        >
           What do I need?
         </button>
-        <button onClick={() => setInput("Compare the top available players")}>
+
+        <button
+          onClick={() =>
+            setInput("Compare the top available players")
+          }
+        >
           Compare players
         </button>
       </div>
@@ -323,12 +438,17 @@ function AssistantChat({
       <div className="chat-input">
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
+          onChange={(event) =>
+            setInput(event.target.value)
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              sendMessage();
+            }
           }}
           placeholder="Ask DraftIQ anything..."
         />
+
         <button onClick={sendMessage}>
           <ArrowRight size={18} />
         </button>
@@ -339,8 +459,10 @@ function AssistantChat({
 
 function HomePage({
   navigate,
+  playerCount,
 }: {
   navigate: (page: string) => void;
+  playerCount: number;
 }) {
   return (
     <Page
@@ -352,12 +474,21 @@ function HomePage({
           <div className="hero-icon">
             <Trophy size={32} />
           </div>
-          <h2>Your draft. Your decisions. Better information.</h2>
+
+          <h2>
+            Your draft. Your decisions. Better information.
+          </h2>
+
           <p>
-            Search real NFL players, practice your draft strategy, and use
-            DraftIQ to understand your roster needs as the draft changes.
+            Search NFL players, practice your draft strategy,
+            and use DraftIQ to understand your roster needs as
+            the draft changes.
           </p>
-          <button className="primary-button" onClick={() => navigate("mock")}>
+
+          <button
+            className="primary-button"
+            onClick={() => navigate("mock")}
+          >
             Start Mock Draft <ArrowRight size={18} />
           </button>
         </div>
@@ -365,28 +496,42 @@ function HomePage({
         <div className="feature-list">
           <button onClick={() => navigate("rankings")}>
             <Users />
+
             <span>
               <b>Player Rankings</b>
-              <small>Search the real NFL player pool.</small>
+              <small>
+                Search {playerCount || "the"} NFL player pool.
+              </small>
             </span>
+
             <ArrowRight />
           </button>
 
-          <button onClick={() => navigate("assistant")}>
+          <button
+            onClick={() => navigate("assistant")}
+          >
             <Bot />
+
             <span>
               <b>DraftIQ Assistant</b>
-              <small>Ask questions about your draft situation.</small>
+              <small>
+                Ask questions about your draft situation.
+              </small>
             </span>
+
             <ArrowRight />
           </button>
 
           <button onClick={() => navigate("guide")}>
             <BookOpen />
+
             <span>
               <b>Draft Guide</b>
-              <small>Learn the basics of building a roster.</small>
+              <small>
+                Learn the basics of building a roster.
+              </small>
             </span>
+
             <ArrowRight />
           </button>
         </div>
@@ -407,15 +552,15 @@ function GuidePage() {
     ],
     [
       "Watch the player pool",
-      "A player who is available now can be more useful to you than a player who was already selected several rounds ago.",
+      "A player who is available now can be more useful to you than a player who was already selected.",
     ],
     [
       "Use rankings as a tool",
-      "Overall rankings are useful, but your roster needs and league settings also matter when choosing between players.",
+      "Overall rankings are useful, but roster needs and league settings also matter.",
     ],
     [
       "Think about bye weeks",
-      "Multiple players with the same bye week can create a temporary lineup problem. It is useful information to track.",
+      "Multiple players with the same bye week can create a temporary lineup problem.",
     ],
     [
       "Keep adapting",
@@ -430,7 +575,10 @@ function GuidePage() {
     >
       <div className="guide-grid">
         {sections.map(([title, text], index) => (
-          <article className="guide-card" key={title}>
+          <article
+            className="guide-card"
+            key={title}
+          >
             <span>{index + 1}</span>
             <h3>{title}</h3>
             <p>{text}</p>
@@ -441,57 +589,140 @@ function GuidePage() {
   );
 }
 
-function RankingsPage() {
+function RankingsPage({
+  players,
+  loading,
+  error,
+}: {
+  players: Player[];
+  loading: boolean;
+  error: string;
+}) {
   const [query, setQuery] = useState("");
-  const [position, setPosition] = useState("ALL");
+  const [position, setPosition] =
+    useState("ALL");
+  const [tier, setTier] = useState("ALL");
+  const [page, setPage] = useState(1);
+
+  const perPage = 25;
 
   const filtered = useMemo(() => {
     return players
       .filter((player) => {
+        const search =
+          query.toLowerCase().trim();
+
         const matchesSearch =
-          player.name.toLowerCase().includes(query.toLowerCase()) ||
-          player.team.toLowerCase().includes(query.toLowerCase());
+          !search ||
+          player.name
+            .toLowerCase()
+            .includes(search) ||
+          player.team
+            .toLowerCase()
+            .includes(search);
 
         const matchesPosition =
-          position === "ALL" || player.position === position;
+          position === "ALL" ||
+          player.position === position;
 
-        return matchesSearch && matchesPosition;
+        const matchesTier =
+          tier === "ALL" ||
+          player.tier === Number(tier);
+
+        return (
+          matchesSearch &&
+          matchesPosition &&
+          matchesTier
+        );
       })
       .sort((a, b) => a.rank - b.rank);
-  }, [query, position]);
+  }, [players, query, position, tier]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, position, tier]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / perPage)
+  );
+
+  const visiblePlayers = filtered.slice(
+    (page - 1) * perPage,
+    page * perPage
+  );
+
+  if (loading) {
+    return (
+      <Page
+        title="Player Rankings"
+        subtitle="Loading the player database..."
+      >
+        <div className="empty-state">
+          Loading player rankings...
+        </div>
+      </Page>
+    );
+  }
 
   return (
     <Page
       title="Player Rankings"
-      subtitle="Search and filter the real NFL player pool."
+      subtitle="Search and filter the loaded NFL player database."
     >
       <div className="notice">
         <Shield size={18} />
+
         <span>
-          Real NFL players. Rankings are seeded from current 2026 PPR fantasy
-          rankings and should be refreshed as expert rankings change.
+          {error
+            ? `Player database unavailable. Showing fallback data. ${error}`
+            : `${players.length} players loaded from the FantasyDraftHQ player database.`}
         </span>
       </div>
 
       <div className="toolbar">
         <div className="search">
           <Search size={18} />
+
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search players..."
+            onChange={(event) =>
+              setQuery(event.target.value)
+            }
+            placeholder="Search players or teams..."
           />
         </div>
 
         <select
           value={position}
-          onChange={(e) => setPosition(e.target.value)}
+          onChange={(event) =>
+            setPosition(event.target.value)
+          }
         >
-          <option value="ALL">All positions</option>
+          <option value="ALL">
+            All positions
+          </option>
           <option value="QB">QB</option>
           <option value="RB">RB</option>
           <option value="WR">WR</option>
           <option value="TE">TE</option>
+          <option value="K">K</option>
+        </select>
+
+        <select
+          value={tier}
+          onChange={(event) =>
+            setTier(event.target.value)
+          }
+        >
+          <option value="ALL">
+            All tiers
+          </option>
+          <option value="1">Tier 1</option>
+          <option value="2">Tier 2</option>
+          <option value="3">Tier 3</option>
+          <option value="4">Tier 4</option>
+          <option value="5">Tier 5</option>
         </select>
       </div>
 
@@ -505,25 +736,74 @@ function RankingsPage() {
           <span>TIER</span>
         </div>
 
-        {filtered.map((player) => (
-          <div className="tr" key={player.id}>
+        {visiblePlayers.map((player) => (
+          <div
+            className="tr"
+            key={player.id}
+          >
             <span>
-              <b className="rank-number">#{player.rank}</b>
+              <b className="rank-number">
+                #{player.rank}
+              </b>{" "}
               {player.name}
             </span>
+
             <span>{player.position}</span>
+
             <span>{player.team}</span>
-            <span>{player.bye}</span>
-            <span>#{player.rank}</span>
+
             <span>
-              <b className="tier-badge">Tier {player.tier}</b>
+              {player.bye ?? "—"}
+            </span>
+
+            <span>
+              #{player.rank}
+            </span>
+
+            <span>
+              <b className="tier-badge">
+                Tier {player.tier}
+              </b>
             </span>
           </div>
         ))}
 
-        {!filtered.length && (
-          <div className="empty-state">No players matched your search.</div>
+        {!visiblePlayers.length && (
+          <div className="empty-state">
+            No players matched your search.
+          </div>
         )}
+      </div>
+
+      <div className="pagination">
+        <button
+          disabled={page <= 1}
+          onClick={() =>
+            setPage((current) =>
+              Math.max(1, current - 1)
+            )
+          }
+        >
+          Previous
+        </button>
+
+        <span>
+          Page {page} of {totalPages}
+        </span>
+
+        <button
+          disabled={page >= totalPages}
+          onClick={() =>
+            setPage((current) =>
+              Math.min(
+                totalPages,
+                current + 1
+              )
+            )
+          }
+        >
+          Next
+        </button>
       </div>
     </Page>
   );
@@ -537,53 +817,119 @@ function DraftPage({
   scoring,
 }: {
   roster: Roster;
-  setRoster: React.Dispatch<React.SetStateAction<Roster>>;
+  setRoster: React.Dispatch<
+    React.SetStateAction<Roster>
+  >;
   available: Player[];
-  setAvailable: React.Dispatch<React.SetStateAction<Player[]>>;
+  setAvailable: React.Dispatch<
+    React.SetStateAction<Player[]>
+  >;
   scoring: string;
 }) {
-  const [assistantOpen, setAssistantOpen] = useState(true);
-  const [filter, setFilter] = useState("ALL");
+  const [assistantOpen, setAssistantOpen] =
+    useState(true);
+
+  const [filter, setFilter] =
+    useState("ALL");
+
+  const [search, setSearch] =
+    useState("");
 
   function draftPlayer(player: Player) {
-    let slot: keyof Roster | null = null;
-
-    if (player.position === "QB" && !roster.QB) {
-      slot = "QB";
-    } else if (player.position === "RB") {
-      if (!roster.RB1) slot = "RB1";
-      else if (!roster.RB2) slot = "RB2";
-      else if (!roster.FLEX) slot = "FLEX";
-    } else if (player.position === "WR") {
-      if (!roster.WR1) slot = "WR1";
-      else if (!roster.WR2) slot = "WR2";
-      else if (!roster.FLEX) slot = "FLEX";
-    } else if (player.position === "TE" && !roster.TE) {
-      slot = "TE";
-    }
-
-    if (!slot) {
-      if (player.position === "QB") {
-        alert("You already have a QB.");
-      } else {
-        alert(`You do not have an open starting ${player.position} slot right now.`);
-      }
+    if (!canDraftPlayer(player, roster)) {
+      alert(
+        `There is no open starting ${player.position} slot right now.`
+      );
       return;
     }
+
+    let slot: keyof Roster | null =
+      null;
+
+    if (
+      player.position === "QB" &&
+      !roster.QB
+    ) {
+      slot = "QB";
+    } else if (
+      player.position === "RB"
+    ) {
+      if (!roster.RB1) {
+        slot = "RB1";
+      } else if (!roster.RB2) {
+        slot = "RB2";
+      } else if (!roster.FLEX) {
+        slot = "FLEX";
+      }
+    } else if (
+      player.position === "WR"
+    ) {
+      if (!roster.WR1) {
+        slot = "WR1";
+      } else if (!roster.WR2) {
+        slot = "WR2";
+      } else if (!roster.FLEX) {
+        slot = "FLEX";
+      }
+    } else if (
+      player.position === "TE"
+    ) {
+      if (!roster.TE) {
+        slot = "TE";
+      } else if (!roster.FLEX) {
+        slot = "FLEX";
+      }
+    } else if (
+      player.position === "K" &&
+      !roster.K
+    ) {
+      slot = "K";
+    }
+
+    if (!slot) return;
 
     setRoster((old) => ({
       ...old,
       [slot as string]: player,
     }));
 
-    setAvailable((old) => old.filter((p) => p.id !== player.id));
+    setAvailable((old) =>
+      old.filter(
+        (candidate) =>
+          candidate.id !== player.id
+      )
+    );
   }
 
   const shownPlayers = available
-    .filter((p) => filter === "ALL" || p.position === filter)
-    .sort((a, b) => a.rank - b.rank);
+    .filter(
+      (player) =>
+        filter === "ALL" ||
+        player.position === filter
+    )
+    .filter((player) => {
+      const value =
+        search.toLowerCase().trim();
 
-  const rosterEntries = Object.entries(roster) as [keyof Roster, Player | null][];
+      if (!value) return true;
+
+      return (
+        player.name
+          .toLowerCase()
+          .includes(value) ||
+        player.team
+          .toLowerCase()
+          .includes(value)
+      );
+    })
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, 100);
+
+  const rosterEntries =
+    Object.entries(roster) as [
+      keyof Roster,
+      Player | null
+    ][];
 
   return (
     <Page
@@ -596,20 +942,54 @@ function DraftPage({
             <span>
               <span className="live-dot" /> LIVE MOCK DRAFT
             </span>
-            <span>{available.length} players available</span>
+
+            <span>
+              {available.length} players available
+            </span>
           </div>
 
           <div className="recent-bar">
             <b>Draft board</b>
-            <span>{getRosterPlayers(roster).length} of 7 roster spots filled</span>
+
+            <span>
+              {getRosterPlayers(roster).length} of 8 roster
+              spots filled
+            </span>
+          </div>
+
+          <div className="toolbar">
+            <div className="search">
+              <Search size={18} />
+
+              <input
+                value={search}
+                onChange={(event) =>
+                  setSearch(event.target.value)
+                }
+                placeholder="Search available players..."
+              />
+            </div>
           </div>
 
           <div className="position-filter">
-            {["ALL", "QB", "RB", "WR", "TE"].map((item) => (
+            {[
+              "ALL",
+              "QB",
+              "RB",
+              "WR",
+              "TE",
+              "K",
+            ].map((item) => (
               <button
                 key={item}
-                className={filter === item ? "active" : ""}
-                onClick={() => setFilter(item)}
+                className={
+                  filter === item
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setFilter(item)
+                }
               >
                 {item}
               </button>
@@ -618,38 +998,76 @@ function DraftPage({
 
           <div className="player-grid">
             {shownPlayers.map((player) => (
-              <div className="player-card" key={player.id}>
+              <div
+                className="player-card"
+                key={player.id}
+              >
                 <div className="player-head">
-                  <span className="pos">{player.position}</span>
-                  <span className="proj">Rank #{player.rank}</span>
+                  <span className="pos">
+                    {player.position}
+                  </span>
+
+                  <span className="proj">
+                    Rank #{player.rank}
+                  </span>
                 </div>
 
                 <h3>{player.name}</h3>
 
                 <p>
-                  {player.team} · Bye {player.bye}
+                  {player.team}
+                  {player.bye
+                    ? ` · Bye ${player.bye}`
+                    : ""}
                 </p>
 
-                <button onClick={() => draftPlayer(player)}>
-                  Draft Player <ArrowRight size={16} />
+                <button
+                  className="draft-player-button"
+                  onClick={() =>
+                    draftPlayer(player)
+                  }
+                >
+                  Draft Player{" "}
+                  <ArrowRight size={16} />
                 </button>
               </div>
             ))}
           </div>
+
+          {!shownPlayers.length && (
+            <div className="empty-state">
+              No available players match your search.
+            </div>
+          )}
         </section>
 
-        <aside className={`draft-sidebar ${assistantOpen ? "" : "collapsed"}`}>
+        <aside
+          className={`draft-sidebar ${
+            assistantOpen ? "" : "collapsed"
+          }`}
+        >
           <button
             className="assistant-title"
-            onClick={() => setAssistantOpen(!assistantOpen)}
+            onClick={() =>
+              setAssistantOpen(
+                !assistantOpen
+              )
+            }
           >
             <span>
               <Bot size={20} />
               <b>DraftIQ</b>
-              <small>Live Draft Assistant</small>
+              <small>
+                Live Draft Assistant
+              </small>
             </span>
+
             <ChevronDown
-              className={assistantOpen ? "" : "rotate"}
+              className={
+                assistantOpen
+                  ? ""
+                  : "rotate"
+              }
               size={18}
             />
           </button>
@@ -662,21 +1080,34 @@ function DraftPage({
               </div>
 
               <div className="quick-tip">
-                <strong>Current roster</strong>
+                <strong>
+                  Current roster
+                </strong>
+
                 <p>
-                  {getRosterPlayers(roster).length
+                  {getRosterPlayers(roster)
+                    .length
                     ? getRosterPlayers(roster)
-                        .map((p) => `${p.name} (${p.position})`)
+                        .map(
+                          (player) =>
+                            `${player.name} (${player.position})`
+                        )
                         .join(", ")
                     : "No players drafted yet."}
                 </p>
               </div>
 
               <div className="quick-tip">
-                <strong>Biggest need</strong>
+                <strong>
+                  Biggest need
+                </strong>
+
                 <p>
-                  {getRosterNeeds(roster).length
-                    ? getRosterNeeds(roster).join(", ")
+                  {getRosterNeeds(roster)
+                    .length
+                    ? getRosterNeeds(
+                        roster
+                      ).join(", ")
                     : "Your main positions are filled."}
                 </p>
               </div>
@@ -694,28 +1125,40 @@ function DraftPage({
       <div className="roster-card">
         <div className="roster-header">
           <div>
-            <span className="eyebrow">YOUR TEAM</span>
+            <span className="eyebrow">
+              YOUR TEAM
+            </span>
+
             <h2>Live Roster</h2>
           </div>
+
           <span>{scoring}</span>
         </div>
 
         <div className="roster-grid">
-          {rosterEntries.map(([slot, player]) => (
-            <div className="roster-slot" key={slot}>
-              <span>{slot}</span>
-              {player ? (
-                <div>
-                  <b>{player.name}</b>
-                  <small>
-                    {player.position} · {player.team}
-                  </small>
-                </div>
-              ) : (
-                <em>Empty</em>
-              )}
-            </div>
-          ))}
+          {rosterEntries.map(
+            ([slot, player]) => (
+              <div
+                className="roster-slot"
+                key={slot}
+              >
+                <span>{slot}</span>
+
+                {player ? (
+                  <div>
+                    <b>{player.name}</b>
+
+                    <small>
+                      {player.position} ·{" "}
+                      {player.team}
+                    </small>
+                  </div>
+                ) : (
+                  <em>Empty</em>
+                )}
+              </div>
+            )
+          )}
         </div>
       </div>
     </Page>
@@ -745,9 +1188,11 @@ function AssistantPage({
           <h2>Your draft co-pilot</h2>
 
           <p>
-            DraftIQ can use the players on your roster and the players still
-            available to give more specific answers than a generic fantasy
-            football chatbot.
+            DraftIQ can use your roster and
+            the players still available to
+            give more specific answers than
+            a generic fantasy football
+            chatbot.
           </p>
 
           <div className="assistant-features">
@@ -755,14 +1200,17 @@ function AssistantPage({
               <Check size={18} />
               Current roster
             </div>
+
             <div>
               <Check size={18} />
               Available players
             </div>
+
             <div>
               <Check size={18} />
               Position needs
             </div>
+
             <div>
               <Check size={18} />
               Scoring format
@@ -781,85 +1229,243 @@ function AssistantPage({
 }
 
 function App() {
-  const [page, setPage] = useState("home");
-  const [roster, setRoster] = useState<Roster>(emptyRoster);
-  const [available, setAvailable] = useState<Player[]>(players);
-  const [scoring] = useState("PPR");
-  const [mobileMenu, setMobileMenu] = useState(false);
+  const [page, setPage] =
+    useState("home");
 
-  function navigate(nextPage: string) {
+  const [roster, setRoster] =
+    useState<Roster>(emptyRoster);
+
+  const [players, setPlayers] =
+    useState<Player[]>([]);
+
+  const [available, setAvailable] =
+    useState<Player[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const [scoring] =
+    useState("PPR");
+
+  const [mobileMenu, setMobileMenu] =
+    useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadPlayers() {
+      try {
+        setLoading(true);
+
+        const loaded =
+          await fetchFantasyPlayers();
+
+        if (!mounted) return;
+
+        const cleaned = loaded
+          .filter(
+            (player) =>
+              player.position !== undefined
+          )
+          .sort(
+            (a, b) =>
+              a.rank - b.rank
+          );
+
+        setPlayers(cleaned);
+        setAvailable(cleaned);
+        setError("");
+      } catch (err) {
+        if (!mounted) return;
+
+        console.error(
+          "Player database failed:",
+          err
+        );
+
+        setPlayers(
+          fallbackPlayers
+        );
+
+        setAvailable(
+          fallbackPlayers
+        );
+
+        setError(
+          "The live player source could not be loaded."
+        );
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadPlayers();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function navigate(
+    nextPage: string
+  ) {
     setPage(nextPage);
     setMobileMenu(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   return (
     <>
       <header className="navbar">
-        <button className="brand" onClick={() => navigate("home")}>
-          <span className="brand-ball">🏈</span>
+        <button
+          className="brand"
+          onClick={() =>
+            navigate("home")
+          }
+        >
+          <span className="brand-ball">
+            🏈
+          </span>
+
           <span>
-            Fantasy Draft <b>HQ</b>
+            Fantasy Draft{" "}
+            <b>HQ</b>
           </span>
         </button>
 
         <button
           className="mobile-menu-button"
-          onClick={() => setMobileMenu(!mobileMenu)}
+          onClick={() =>
+            setMobileMenu(
+              !mobileMenu
+            )
+          }
         >
-          {mobileMenu ? <X /> : <Menu />}
+          {mobileMenu ? (
+            <X />
+          ) : (
+            <Menu />
+          )}
         </button>
 
-        <nav className={mobileMenu ? "open" : ""}>
+        <nav
+          className={
+            mobileMenu
+              ? "open"
+              : ""
+          }
+        >
           <button
-            className={page === "home" ? "active" : ""}
-            onClick={() => navigate("home")}
+            className={
+              page === "home"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              navigate("home")
+            }
           >
-            <Home size={16} /> Home
+            <Home size={16} />
+            Home
           </button>
 
           <button
-            className={page === "guide" ? "active" : ""}
-            onClick={() => navigate("guide")}
+            className={
+              page === "guide"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              navigate("guide")
+            }
           >
-            <BookOpen size={16} /> Draft Guide
+            <BookOpen size={16} />
+            Draft Guide
           </button>
 
           <button
-            className={page === "rankings" ? "active" : ""}
-            onClick={() => navigate("rankings")}
+            className={
+              page === "rankings"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              navigate("rankings")
+            }
           >
-            <Trophy size={16} /> Player Rankings
+            <Trophy size={16} />
+            Player Rankings
           </button>
 
           <button
-            className={page === "mock" ? "active" : ""}
-            onClick={() => navigate("mock")}
+            className={
+              page === "mock"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              navigate("mock")
+            }
           >
-            <Zap size={16} /> Mock Draft
+            <Zap size={16} />
+            Mock Draft
           </button>
 
           <button
-            className={page === "assistant" ? "active" : ""}
-            onClick={() => navigate("assistant")}
+            className={
+              page === "assistant"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              navigate("assistant")
+            }
           >
-            <Bot size={16} /> AI Assistant
+            <Bot size={16} />
+            AI Assistant
           </button>
         </nav>
 
         <button
           className="start-draft"
-          onClick={() => navigate("mock")}
+          onClick={() =>
+            navigate("mock")
+          }
         >
-          Start Mock Draft <ArrowRight size={17} />
+          Start Mock Draft{" "}
+          <ArrowRight size={17} />
         </button>
       </header>
 
-      {page === "home" && <HomePage navigate={navigate} />}
+      {page === "home" && (
+        <HomePage
+          navigate={navigate}
+          playerCount={
+            players.length
+          }
+        />
+      )}
 
-      {page === "guide" && <GuidePage />}
+      {page === "guide" && (
+        <GuidePage />
+      )}
 
-      {page === "rankings" && <RankingsPage />}
+      {page === "rankings" && (
+        <RankingsPage
+          players={players}
+          loading={loading}
+          error={error}
+        />
+      )}
 
       {page === "assistant" && (
         <AssistantPage
@@ -880,11 +1486,21 @@ function App() {
       )}
 
       <footer>
-        <span>Fantasy Draft HQ</span>
-        <span>Built for fantasy football research and draft practice.</span>
+        <span>
+          Fantasy Draft HQ
+        </span>
+
+        <span>
+          Built for fantasy football
+          research and draft practice.
+        </span>
       </footer>
     </>
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(
+  document.getElementById("root")!
+).render(
+  <App />
+);
