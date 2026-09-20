@@ -1947,3 +1947,522 @@ nav button {
 ::-webkit-scrollbar-thumb:hover {
   background: #3c5f88;
 }
+/* =========================================================
+   FINAL FANTASY DRAFT HQ THEME
+   Makes Mock Draft, AI Assistant, and Live Draft
+   match the Player Rankings visual style.
+========================================================= */
+
+/* ---------- Global typography ---------- */
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+body {
+  color: var(--text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+/* ---------- Standard page layout ---------- */
+
+.page,
+.page-shell {
+  width: min(1145px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 48px 0 70px;
+}
+
+.page-heading,
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-heading h1,
+.page-header h1 {
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 8px 0 12px;
+  color: var(--white);
+}
+
+.page-heading p,
+.page-header p {
+  margin: 0;
+  color: var(--silver);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  font-size: 12px;
+  color: var(--blue-light);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+/* ---------- Consistent cards ---------- */
+
+.card,
+.panel,
+.draft-panel,
+.assistant-panel,
+.guide-card,
+.player-card,
+.setup-card,
+.info-box,
+.live-card,
+.draft-setup,
+.draft-board,
+.draft-sidebar {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10, 27, 46, 0.98),
+      rgba(5, 18, 32, 0.98)
+    );
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ---------- Mock Draft ---------- */
+
+.draft-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.draft-main {
+  min-width: 0;
+}
+
+.draft-status,
+.recent {
+  background: rgba(10, 27, 46, 0.96);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  color: var(--text);
+}
+
+.draft-status {
+  border-radius: 14px 14px 0 0;
+}
+
+.recent {
+  border-top: 0;
+  display: flex;
+  justify-content: space-between;
+  color: var(--silver);
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.player-card {
+  padding: 18px;
+}
+
+.player-card h3 {
+  margin: 14px 0 5px;
+  font-size: 19px;
+  color: white;
+}
+
+.player-card p {
+  margin: 0;
+  color: var(--silver);
+  font-size: 14px;
+}
+
+.player-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pos {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(42, 111, 219, 0.18);
+  border: 1px solid rgba(77, 145, 255, 0.25);
+  color: var(--blue-light);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.proj {
+  color: var(--silver);
+  font-size: 13px;
+}
+
+.player-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* ---------- Buttons ---------- */
+
+.primary,
+.primary-btn,
+.primary-button {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+  font-weight: 800;
+}
+
+.primary:hover,
+.primary-btn:hover,
+.primary-button:hover {
+  background: var(--red-bright);
+  border-color: var(--red-bright);
+}
+
+.secondary,
+.secondary-btn {
+  background: var(--navy);
+  border-color: var(--border);
+  color: white;
+}
+
+.tiny {
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+/* ---------- DraftIQ sidebar ---------- */
+
+.draft-sidebar {
+  overflow: hidden;
+}
+
+.assistant-title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 27, 46, 0.98);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  text-align: left;
+  color: white;
+}
+
+.assistant-title:hover {
+  background: rgba(42, 111, 219, 0.12);
+}
+
+.assistant-title div {
+  flex: 1;
+}
+
+.assistant-title small {
+  display: block;
+  margin-top: 2px;
+  color: var(--silver);
+}
+
+.assistant-body {
+  padding: 16px;
+}
+
+.analyzing {
+  color: var(--blue-light);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.assistant-body p {
+  line-height: 1.55;
+}
+
+.rec {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rec b {
+  color: white;
+}
+
+.rec small {
+  display: block;
+  color: var(--silver);
+  margin-top: 3px;
+}
+
+.roster-box {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.roster-box h4 {
+  margin: 0;
+  padding: 12px;
+  background: #07182a;
+  color: var(--blue-light);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.roster-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.roster-row span {
+  color: var(--silver);
+}
+
+.roster-row b {
+  color: white;
+}
+
+/* ---------- AI Assistant ---------- */
+
+.assistant-landing {
+  max-width: 850px;
+}
+
+.bot-large {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--blue);
+  border-radius: 14px;
+  background: rgba(42, 111, 219, 0.12);
+  color: var(--blue-light);
+  margin-bottom: 24px;
+}
+
+.assistant-landing h2 {
+  font-size: 24px;
+  margin: 0 0 10px;
+}
+
+.assistant-landing p {
+  line-height: 1.65;
+}
+
+.example-chat {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(10, 27, 46, 0.8);
+}
+
+.chat-user,
+.chat-ai {
+  padding: 12px 14px;
+  border-radius: 9px;
+  margin-bottom: 10px;
+}
+
+.chat-user {
+  background: #07182a;
+  color: white;
+}
+
+.chat-ai {
+  background: #091c30;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ---------- Live Draft ---------- */
+
+.live-draft,
+.live-draft-page {
+  width: min(1145px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 48px 0 70px;
+}
+
+.live-draft h1,
+.live-draft-page h1 {
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 8px 0 12px;
+}
+
+.live-draft h2,
+.live-draft-page h2 {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.live-draft h3,
+.live-draft-page h3 {
+  font-size: 18px;
+}
+
+.live-draft p,
+.live-draft-page p {
+  line-height: 1.55;
+}
+
+.live-draft .card,
+.live-draft-page .card {
+  padding: 18px;
+}
+
+/* Live draft setup */
+
+.setup-card,
+.draft-setup {
+  padding: 20px;
+  max-width: 100%;
+}
+
+.setup-card h2,
+.draft-setup h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.setup-card label,
+.draft-setup label {
+  color: var(--silver);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Live draft player list */
+
+.player-row {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: white;
+}
+
+.player-row:hover {
+  background: #0c233c;
+  border-color: var(--blue);
+}
+
+/* Live draft informational boxes */
+
+.info-box {
+  padding: 16px;
+  color: var(--silver);
+  line-height: 1.55;
+}
+
+.info-box strong {
+  color: white;
+}
+
+/* ---------- Inputs ---------- */
+
+input,
+select,
+textarea {
+  background: #07182a;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--blue-light);
+  box-shadow: 0 0 0 2px rgba(42, 111, 219, 0.2);
+}
+
+/* ---------- Footer consistency ---------- */
+
+footer {
+  margin-top: 20px;
+  padding: 26px 30px;
+  border-top: 1px solid var(--border);
+  background: #020b16;
+  color: var(--silver);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .draft-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .player-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page,
+  .page-shell,
+  .live-draft,
+  .live-draft-page {
+    width: min(100% - 28px, 700px);
+  }
+}
+
+@media (max-width: 600px) {
+  .page,
+  .page-shell,
+  .live-draft,
+  .live-draft-page {
+    width: calc(100% - 20px);
+    padding-top: 30px;
+  }
+
+  .page-heading h1,
+  .page-header h1,
+  .live-draft h1,
+  .live-draft-page h1 {
+    font-size: 30px;
+  }
+
+  .player-grid {
+    grid-template-columns: 1fr;
+  }
+}
