@@ -17,7 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import "./styles.css";
-
+import LiveDraftPage from "./LiveDraftPage";
 import {
   fetchFantasyPlayers,
   type FantasyPlayer,
