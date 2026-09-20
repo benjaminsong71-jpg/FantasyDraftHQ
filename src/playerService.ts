@@ -260,9 +260,16 @@ export async function fetchFantasyPlayers(): Promise<
       ).values()
     );
 
-  uniquePlayers.sort(
-    (a, b) => a.rank - b.rank
-  );
+uniquePlayers.sort(
+  (a, b) => a.rank - b.rank
+);
 
-  return uniquePlayers;
+// Give every player a continuous Fantasy Draft HQ rank.
+const rankedPlayers = uniquePlayers.map((player, index) => ({
+  ...player,
+  rank: index + 1,
+  tier: getTier(index + 1),
+}));
+
+return rankedPlayers;
 }
