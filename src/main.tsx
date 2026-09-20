@@ -216,7 +216,7 @@ function RankingsPage() {
   return <Page title="Player Rankings" subtitle="Search and filter the real NFL player pool.">
     <div className="notice">Real NFL players • Draft-rank numbers are based on current 2026 fantasy rankings. They are not guaranteed projections.</div>
     <div className="toolbar"><div className="search"><Search size={18}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search players..."/></div><select value={f} onChange={e=>setF(e.target.value)}><option value="ALL">All positions</option>{["QB","RB","WR","TE","K","DEF"].map(x=><option key={x}>{x}</option>)}</select></div>
-    <div className="table"><div className="thead"><span>PLAYER</span><span>POS</span><span>TEAM</span><span>BYE</span><span>RANK</span><span>TIER</span></div>{list.map((p,i)=><div className="tr" key={p.id}><span><b>#{i+1}</b> {p.name}</span><span>{p.position}</span><span>{p.team}</span><span>{p.bye}</span><span>#{p.projected}</span><span><em>Tier {p.tier}</em></span></div>)}</div>
+    <div className="table"><div className="thead"><span>PLAYER</span><span>POS</span><span>TEAM</span><span>BYE</span><span>RANK</span><span>TIER</span></div>{list.map((p,i)=><div className="tr" key={p.id}><span><b#{p.rank}</b> {p.name}</span><span>{p.position}</span><span>{p.team}</span><span>{p.bye}</span><span>#{p.projected}</span><span><em>Tier {p.tier}</em></span></div>)}</div>
   </Page>
 }
 
