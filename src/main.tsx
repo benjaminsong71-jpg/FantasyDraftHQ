@@ -21,30 +21,46 @@ type Player = {
 type Roster = Record<string, Player | null>;
 
 const players: Player[] = [
-  {id:1,name:"Jordan Reed",position:"QB",team:"Lions",bye:8,projected:328,tier:"1"},
-  {id:2,name:"Marcus Allen",position:"QB",team:"Sharks",bye:11,projected:309,tier:"1"},
-  {id:3,name:"Tyler Brooks",position:"QB",team:"Wolves",bye:7,projected:296,tier:"2"},
-  {id:4,name:"Ethan Cole",position:"QB",team:"Hawks",bye:10,projected:282,tier:"2"},
-  {id:5,name:"Derrick Stone",position:"RB",team:"Tigers",bye:6,projected:286,tier:"1"},
-  {id:6,name:"Cam Walker",position:"RB",team:"Knights",bye:9,projected:274,tier:"1"},
-  {id:7,name:"Jalen Brooks",position:"RB",team:"Bulls",bye:12,projected:258,tier:"2"},
-  {id:8,name:"Noah Grant",position:"RB",team:"Falcons",bye:5,projected:247,tier:"2"},
-  {id:9,name:"Chris Morgan",position:"RB",team:"Rockets",bye:8,projected:236,tier:"3"},
-  {id:10,name:"Andre Lewis",position:"RB",team:"Wolves",bye:10,projected:225,tier:"3"},
-  {id:11,name:"Jay Carter",position:"WR",team:"Lions",bye:8,projected:301,tier:"1"},
-  {id:12,name:"Malik Johnson",position:"WR",team:"Tigers",bye:6,projected:289,tier:"1"},
-  {id:13,name:"Ryan Cooper",position:"WR",team:"Hawks",bye:10,projected:272,tier:"2"},
-  {id:14,name:"Darius King",position:"WR",team:"Knights",bye:9,projected:260,tier:"2"},
-  {id:15,name:"Owen Price",position:"WR",team:"Bulls",bye:12,projected:248,tier:"3"},
-  {id:16,name:"Miles Turner",position:"WR",team:"Falcons",bye:5,projected:238,tier:"3"},
-  {id:17,name:"Carter Bell",position:"TE",team:"Rockets",bye:8,projected:221,tier:"1"},
-  {id:18,name:"Logan Davis",position:"TE",team:"Sharks",bye:11,projected:204,tier:"2"},
-  {id:19,name:"Eli Parker",position:"TE",team:"Wolves",bye:7,projected:190,tier:"2"},
-  {id:20,name:"Mason Hill",position:"TE",team:"Hawks",bye:10,projected:176,tier:"3"},
-  {id:21,name:"Alex Young",position:"K",team:"Lions",bye:8,projected:142,tier:"1"},
-  {id:22,name:"Ryan Fox",position:"K",team:"Tigers",bye:6,projected:136,tier:"2"},
-  {id:23,name:"Denver Defense",position:"DEF",team:"Knights",bye:9,projected:131,tier:"1"},
-  {id:24,name:"Metro Defense",position:"DEF",team:"Bulls",bye:12,projected:125,tier:"2"}
+  {id:1,name:"Jahmyr Gibbs",position:"RB",team:"Lions",bye:8,projected:1,tier:"1"},
+  {id:2,name:"Bijan Robinson",position:"RB",team:"Falcons",bye:5,projected:2,tier:"1"},
+  {id:3,name:"Puka Nacua",position:"WR",team:"Rams",bye:8,projected:3,tier:"1"},
+  {id:4,name:"Christian McCaffrey",position:"RB",team:"49ers",bye:14,projected:4,tier:"1"},
+  {id:5,name:"Jaxon Smith-Njigba",position:"WR",team:"Seahawks",bye:8,projected:5,tier:"1"},
+  {id:6,name:"Ja'Marr Chase",position:"WR",team:"Bengals",bye:10,projected:6,tier:"1"},
+  {id:7,name:"Jonathan Taylor",position:"RB",team:"Colts",bye:8,projected:7,tier:"1"},
+  {id:8,name:"Amon-Ra St. Brown",position:"WR",team:"Lions",bye:8,projected:8,tier:"1"},
+  {id:9,name:"CeeDee Lamb",position:"WR",team:"Cowboys",bye:10,projected:9,tier:"1"},
+  {id:10,name:"Justin Jefferson",position:"WR",team:"Vikings",bye:6,projected:10,tier:"1"},
+  {id:11,name:"Josh Allen",position:"QB",team:"Bills",bye:7,projected:11,tier:"1"},
+  {id:12,name:"George Pickens",position:"WR",team:"Cowboys",bye:10,projected:12,tier:"2"},
+  {id:13,name:"James Cook",position:"RB",team:"Bills",bye:7,projected:13,tier:"2"},
+  {id:14,name:"Chase Brown",position:"RB",team:"Bengals",bye:10,projected:14,tier:"2"},
+  {id:15,name:"De'Von Achane",position:"RB",team:"Dolphins",bye:12,projected:15,tier:"2"},
+  {id:16,name:"Saquon Barkley",position:"RB",team:"Eagles",bye:9,projected:16,tier:"2"},
+  {id:17,name:"Derrick Henry",position:"RB",team:"Ravens",bye:7,projected:17,tier:"2"},
+  {id:18,name:"Kenneth Walker III",position:"RB",team:"Chiefs",bye:10,projected:18,tier:"2"},
+  {id:19,name:"Nico Collins",position:"WR",team:"Texans",bye:6,projected:19,tier:"2"},
+  {id:20,name:"Malik Nabers",position:"WR",team:"Giants",bye:14,projected:20,tier:"2"},
+  {id:21,name:"Chris Olave",position:"WR",team:"Saints",bye:11,projected:21,tier:"2"},
+  {id:22,name:"DeVonta Smith",position:"WR",team:"Eagles",bye:9,projected:22,tier:"2"},
+  {id:23,name:"Zay Flowers",position:"WR",team:"Ravens",bye:7,projected:23,tier:"2"},
+  {id:24,name:"Tee Higgins",position:"WR",team:"Bengals",bye:10,projected:24,tier:"2"},
+  {id:25,name:"Rashee Rice",position:"WR",team:"Chiefs",bye:10,projected:25,tier:"2"},
+  {id:26,name:"Tetairoa McMillan",position:"WR",team:"Panthers",bye:14,projected:26,tier:"2"},
+  {id:27,name:"Garrett Wilson",position:"WR",team:"Jets",bye:9,projected:27,tier:"2"},
+  {id:28,name:"Drake London",position:"WR",team:"Falcons",bye:5,projected:28,tier:"2"},
+  {id:29,name:"Brock Bowers",position:"TE",team:"Raiders",bye:8,projected:29,tier:"2"},
+  {id:30,name:"Trey McBride",position:"TE",team:"Cardinals",bye:8,projected:30,tier:"2"},
+  {id:31,name:"George Kittle",position:"TE",team:"49ers",bye:14,projected:31,tier:"3"},
+  {id:32,name:"Sam LaPorta",position:"TE",team:"Lions",bye:8,projected:32,tier:"3"},
+  {id:33,name:"Lamar Jackson",position:"QB",team:"Ravens",bye:7,projected:33,tier:"2"},
+  {id:34,name:"Jalen Hurts",position:"QB",team:"Eagles",bye:9,projected:34,tier:"2"},
+  {id:35,name:"Jayden Daniels",position:"QB",team:"Commanders",bye:12,projected:35,tier:"2"},
+  {id:36,name:"Patrick Mahomes",position:"QB",team:"Chiefs",bye:10,projected:36,tier:"2"},
+  {id:37,name:"Baker Mayfield",position:"QB",team:"Buccaneers",bye:9,projected:37,tier:"3"},
+  {id:38,name:"Dak Prescott",position:"QB",team:"Cowboys",bye:10,projected:38,tier:"3"},
+  {id:39,name:"Travis Kelce",position:"TE",team:"Chiefs",bye:10,projected:39,tier:"3"},
+  {id:40,name:"Mark Andrews",position:"TE",team:"Ravens",bye:7,projected:40,tier:"3"}
 ];
 
 const emptyRoster = (): Roster => ({
@@ -138,7 +154,7 @@ function App() {
         />
       )}
 
-      <footer><span>Fantasy Draft HQ</span><span>Educational student project • Demo player data</span></footer>
+      <footer><span>Fantasy Draft HQ</span><span>Educational student project • Real NFL player pool</span></footer>
     </div>
   );
 }
@@ -160,7 +176,7 @@ function HomePage({startDraft,setPage}:{startDraft:()=>void,setPage:(p:string)=>
           <div className="pick-number">07</div>
           <div className="pick-label">YOUR NEXT PICK</div>
           <div className="ai-mini"><Bot size={18}/><div><b>DraftIQ</b><small>Analyzing your roster…</small></div></div>
-          <div className="mini-options"><div>WR <b>Jay Carter</b></div><div>TE <b>Carter Bell</b></div><div>RB <b>Chris Morgan</b></div></div>
+          <div className="mini-options"><div>RB <b>Jahmyr Gibbs</b></div><div>WR <b>Ja'Marr Chase</b></div><div>TE <b>Brock Bowers</b></div></div>
         </div>
       </div>
     </section>
@@ -168,7 +184,7 @@ function HomePage({startDraft,setPage}:{startDraft:()=>void,setPage:(p:string)=>
       <div className="section-heading"><div><span className="eyebrow">THE TOOLKIT</span><h2>Everything you need before draft day.</h2></div></div>
       <div className="feature-grid">
         <Feature icon={<BookOpen/>} title="Draft Guide" text="Learn scoring, positions, roster construction, and the basics." onClick={()=>setPage("guide")}/>
-        <Feature icon={<Trophy/>} title="Player Rankings" text="Explore searchable demo rankings and projected points." onClick={()=>setPage("rankings")}/>
+        <Feature icon={<Trophy/>} title="Player Rankings" text="Explore real NFL players and current fantasy draft rankings." onClick={()=>setPage("rankings")}/>
         <Feature icon={<Zap/>} title="Mock Draft" text="Practice a snake draft against simulated teams." onClick={startDraft}/>
         <Feature icon={<Bot/>} title="DraftIQ" text="Get live, situation-aware draft explanations." onClick={()=>setPage("assistant")}/>
       </div>
@@ -197,10 +213,10 @@ function GuidePage() {
 function RankingsPage() {
   const [q,setQ]=useState(""); const [f,setF]=useState("ALL");
   const list=players.filter(p=>(f==="ALL"||p.position===f)&&p.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.projected-a.projected);
-  return <Page title="Player Rankings" subtitle="Search and filter the demo player pool.">
-    <div className="notice">Demo Data — rankings and projections are examples for this student project.</div>
+  return <Page title="Player Rankings" subtitle="Search and filter the real NFL player pool.">
+    <div className="notice">Real NFL players • Draft-rank numbers are based on current 2026 fantasy rankings. They are not guaranteed projections.</div>
     <div className="toolbar"><div className="search"><Search size={18}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search players..."/></div><select value={f} onChange={e=>setF(e.target.value)}><option value="ALL">All positions</option>{["QB","RB","WR","TE","K","DEF"].map(x=><option key={x}>{x}</option>)}</select></div>
-    <div className="table"><div className="thead"><span>PLAYER</span><span>POS</span><span>TEAM</span><span>BYE</span><span>PROJ.</span><span>TIER</span></div>{list.map((p,i)=><div className="tr" key={p.id}><span><b>#{i+1}</b> {p.name}</span><span>{p.position}</span><span>{p.team}</span><span>{p.bye}</span><span>{p.projected}</span><span><em>Tier {p.tier}</em></span></div>)}</div>
+    <div className="table"><div className="thead"><span>PLAYER</span><span>POS</span><span>TEAM</span><span>BYE</span><span>RANK</span><span>TIER</span></div>{list.map((p,i)=><div className="tr" key={p.id}><span><b>#{i+1}</b> {p.name}</span><span>{p.position}</span><span>{p.team}</span><span>{p.bye}</span><span>#{p.projected}</span><span><em>Tier {p.tier}</em></span></div>)}</div>
   </Page>
 }
 
@@ -217,9 +233,9 @@ function DraftPage(props:any) {
   return <Page title={`Round ${Math.ceil(props.pick/props.teams)} • Pick ${((props.pick-1)%props.teams)+1}`} subtitle={`Overall pick ${props.pick} • ${props.scoring} • ${props.teams} teams`}>
     <div className="draft-layout">
       <section className="draft-main">
-        <div className="draft-status"><div><span className="live-dot">●</span> LIVE MOCK DRAFT</div><span>Demo player data</span></div>
+        <div className="draft-status"><div><span className="live-dot">●</span> LIVE MOCK DRAFT</div><span>Real NFL player pool</span></div>
         <div className="recent"><b>Draft board</b><span>Pick {props.pick}</span></div>
-        <div className="player-grid">{props.available.map((p:Player)=><div className="player-card" key={p.id}><div className="player-head"><span className={"pos "+p.position}>{p.position}</span><span className="proj">{p.projected} proj.</span></div><h3>{p.name}</h3><p>{p.team} • Bye {p.bye} • Tier {p.tier}</p><div className="player-actions"><button className="secondary tiny" onClick={()=>props.setWhy(p.id)}><CircleHelp size={14}/> Why?</button><button className="primary tiny" onClick={()=>props.draftPlayer(p)}>Draft</button></div>{props.why===p.id&&<div className="why">This is a demo explanation based on position, projected points, and your current roster needs.<button onClick={()=>props.setWhy(null)}>×</button></div>}</div>)}</div>
+        <div className="player-grid">{props.available.map((p:Player)=><div className="player-card" key={p.id}><div className="player-head"><span className={"pos "+p.position}>{p.position}</span><span className="proj">Rank #{p.projected}</span></div><h3>{p.name}</h3><p>{p.team} • Bye {p.bye} • Tier {p.tier}</p><div className="player-actions"><button className="secondary tiny" onClick={()=>props.setWhy(p.id)}><CircleHelp size={14}/> Why?</button><button className="primary tiny" onClick={()=>props.draftPlayer(p)}>Draft</button></div>{props.why===p.id&&<div className="why">DraftIQ considers this player's current draft rank, position, and your roster needs.<button onClick={()=>props.setWhy(null)}>×</button></div>}</div>)}</div>
       </section>
       <aside className={props.assistantOpen?"draft-sidebar":"draft-sidebar collapsed"}>
         <button className="assistant-title" onClick={()=>props.setAssistantOpen(!props.assistantOpen)}><Bot/><div><b>DraftIQ</b><small>Live Draft Assistant</small></div><ChevronDown className={props.assistantOpen?"":"rotate"}/></button>
